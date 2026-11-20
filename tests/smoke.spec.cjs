@@ -34,3 +34,14 @@ test('real browser: create, handoff, fail-closed gate, approval, reload and expo
  await expect(page.locator('section.step.done')).toHaveCount(5);
  expect(errors).toEqual([]);
 });
+
+test('restoring backup never trusts stale approval or PASS claims',async({page})=>{
+ await page.goto('/');
+ page.on('dialog',dialog=>dialog.accept());
+ const project={id:'import-test',name:'Restored project',goal:'Verify imported approval state',criteria:'Fresh verification required',approved:true,evidence:'Unverified old device',steps:['ChatGPT','Gemini','DeepSeek','Claude','Grok'].map(agent=>({agent,result:'Old answer'})),tests:[{name:'Old test',expected:'PASS',actual:'Claimed pass',status:'PASS'}]};
+ await page.locator('#import').setInputFiles({name:'backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({app:'Multi-AI House V2',version:2,projects:[project]}))});
+ await expect(page.locator('article.project')).toContainText('Chưa phê duyệt');
+ await expect(page.locator('article.project')).toContainText('Trạng thái: NOT_RUN');
+ await page.getByRole('button',{name:'Phê duyệt dự án'}).click();
+ await expect(page.locator('#notice')).toContainText('bằng chứng');
+});
