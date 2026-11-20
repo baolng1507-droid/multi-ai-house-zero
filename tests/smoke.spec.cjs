@@ -45,3 +45,18 @@ test('restoring backup never trusts stale approval or PASS claims',async({page})
  await page.getByRole('button',{name:'Phê duyệt dự án'}).click();
  await expect(page.locator('#notice')).toContainText('bằng chứng');
 });
+
+test('new request clears stale delivery even when provider rejects it',async({page})=>{
+ await page.goto('/');
+ await page.evaluate(()=>localStorage.setItem('multi-ai-house-auto-v1',JSON.stringify({brief:'Old brief',draft:'Old draft',final:'Old final'})));
+ await page.reload();
+ await expect(page.locator('#final')).toContainText('Old final');
+ await page.route('https://openrouter.ai/api/v1/chat/completions',route=>route.fulfill({status:429,contentType:'application/json',body:JSON.stringify({error:{message:'rate limited'}})}));
+ await page.locator('#brief').fill('New brief');
+ await page.locator('#key').fill('test-key');
+ await page.locator('#start').click();
+ await expect(page.locator('#status')).toContainText('giới hạn lượt gọi');
+ await expect(page.locator('#results')).toBeHidden();
+ const stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('multi-ai-house-auto-v1')));
+ expect(stored).toEqual({brief:'New brief',draft:'',final:''});
+});
