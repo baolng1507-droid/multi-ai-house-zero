@@ -1,38 +1,69 @@
 <!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0a1020"><title>Multi-AI House V2</title><style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0a1020;color:#eff5ff;font:15px -apple-system,BlinkMacSystemFont,system-ui,sans-serif}main{max-width:960px;margin:auto;padding:18px 16px 75px}header{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:22px;font-weight:800}.sub{font-size:12px;color:#98b2c8}.tag{border:1px solid #2b695d;border-radius:50px;padding:8px;color:#a5f0d0;font-size:12px}.hero{margin:18px 0;background:linear-gradient(130deg,#124b49,#17284b);padding:22px;border-radius:22px}.hero h1{margin:0 0 10px;font-size:27px;line-height:1.2}p{color:#b4c3d7;line-height:1.55}.panel,.project,.step{border:1px solid #30445f;border-radius:16px;background:#152238;padding:17px;margin:14px 0}h2{font-size:19px;margin:8px 0 14px}h3{margin:0 0 8px;font-size:16px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.stat{padding:13px;border-radius:12px;background:#102035}.stat b{display:block;font-size:23px}.stat small{color:#a4b6ce}.agents{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.agent{padding:13px;background:#11213a;border:1px solid #30445f;border-radius:12px}.agent b{display:block}.agent small{color:#a4b6ce}input,textarea,select{display:block;width:100%;border:1px solid #4b5e7b;border-radius:10px;background:#0c1629;color:#fff;padding:12px;font:inherit}textarea{min-height:90px;resize:vertical}label{display:block;margin:12px 0 7px;color:#dbe7f5}button,.linkbtn{border:0;border-radius:10px;background:#9ceac7;color:#09221a;padding:11px 13px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}.alt{background:#2c3e59;color:#fff}.warn{background:#6c3446;color:#fff}.bar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.muted{color:#9eb0c6}.small{font-size:12px}.step{background:#0e1b30}.step.done{border-color:#2c846c}.step.active{border-color:#8ccebd}.step h3{display:flex;justify-content:space-between;gap:8px}.badge{font-size:12px;font-weight:500;color:#a4e9cd}.progress{height:9px;border-radius:20px;background:#273852;overflow:hidden}.progress span{display:block;height:100%;background:#9ceac7}.result{white-space:pre-wrap;overflow-wrap:anywhere;color:#e1e9f5;background:#0a1527;border-radius:9px;padding:12px;max-height:220px;overflow:auto}details{margin-top:12px}summary{cursor:pointer;color:#a6f1d1}.notice{min-height:22px;color:#a4e8c6;margin-top:8px}footer{font-size:12px;color:#8295b0;text-align:center;margin:26px 0}@media(min-width:650px){.agents{grid-template-columns:repeat(5,1fr)}.grid{grid-template-columns:repeat(4,1fr)}}
-#auto-hub { scroll-margin-top: 12px; }
+#auto-hub { padding: clamp(17px, 4vw, 32px); border-color: #315655; background: radial-gradient(ellipse at top right,#1b4143 0,transparent 52%),#111e30; scroll-margin-top: 12px; }
+#auto-hub h1 { margin: 0 0 8px; font-size: clamp(28px, 6vw, 44px); line-height: 1.14; letter-spacing: -.045em; }
+#auto-hub .hub-intro { margin: 0 0 20px; }
+.hub-nav { font-size: 13px; color: #a6f1d1; }
+.hub-rooms { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); list-style: none; padding: 0; margin: 0 0 18px; gap: 10px; }
+.hub-rooms li { border: 1px solid #355361; border-radius: 14px; padding: 12px; background: #132638; }
+.hub-rooms h2 { margin: 0 0 2px; font-size: 15px; }
+.hub-rooms small { color: #b4c3d7; }
+.hub-rooms .room-state { display: block; margin-top: 8px; font-size: 13px; color: #b4c3d7; }
+.hub-rooms li[data-state="working"], .hub-rooms li[data-state="done"] { border-color: #77c5a8; }
+.hub-rooms li[data-state="working"] .room-state, .hub-rooms li[data-state="done"] .room-state { color: #a6f1d1; }
+.hub-rooms li[data-state="error"] { border-color: #ef9c95; }
+.hub-rooms li[data-state="error"] .room-state { color: #ffc2bc; }
+#auto-hub form, #auto-hub #results { border: 1px solid #355361; border-radius: 16px; background: #0e192b; padding: 14px; }
+#auto-hub form h2 { margin: 0 0 8px; }
 #auto-hub input, #auto-hub textarea { font-size: 16px; }
 #auto-hub button { min-height: 44px; }
 #auto-hub button:disabled { opacity: .6; cursor: wait; }
-#auto-hub #key-help { font-size: .875rem; }
+#auto-hub #start { flex: 1; }
+#auto-hub #key-help { font-size: .8125rem; margin: 6px 0 0; }
 #auto-hub #key-help a { color: #a6f1d1; }
-#auto-hub #status { color: #a6f1d1; }
+#auto-hub #status { color: #a6f1d1; margin: 10px 0; }
+#auto-hub #status:empty { margin: 0; }
+#auto-hub #results { margin-top: 12px; }
 #auto-hub #saved-brief { overflow-wrap: anywhere; white-space: pre-wrap; }
 #auto-hub .result { font: inherit; max-height: none; }
-</style><script type="module" src="./auto.js"></script></head><body><main><header><div><div class="sub">TRUNG TÂM ĐIỀU PHỐI AI</div><div class="brand">🏠 Multi-AI House V2</div></div><span class="tag">Điều phối AI</span></header><section class="hero"><h1>Một dự án. Năm chuyên gia.<br>Một quy trình rõ ràng.</h1><p>Tạo dự án, chuyển giao kết quả theo từng giai đoạn, kiểm tra chất lượng và phê duyệt đầu ra. Dữ liệu lưu trên thiết bị; quy trình bên dưới chuyển việc thủ công.</p><div class="bar"><a class="linkbtn" href="#auto-hub">Chạy tự động với hai AI</a></div><div class="grid" id="stats"></div></section><section id="auto-hub" class="panel" aria-labelledby="auto-title">
-  <h2 id="auto-title">Chạy tự động với hai AI</h2>
-  <p>Gemma soạn bản nháp, GPT-OSS kiểm tra và trả bản hoàn chỉnh.</p>
+</style><script type="module" src="./auto.js"></script></head><body><main><header>
+  <div class="brand">Multi-AI House V2</div>
+  <a class="hub-nav" href="#manual-rooms">Phòng thủ công ↓</a>
+</header>
+<section id="auto-hub" class="panel" aria-labelledby="auto-title">
+  <h1 id="auto-title">Điều hành công ty AI</h1>
+  <p class="hub-intro">Giao một việc. Phòng nội dung soạn bản nháp, phòng kiểm định sửa và bàn giao bản cuối.</p>
+  <ul class="hub-rooms" aria-label="Tiến độ phòng tự động">
+    <li id="room-writer"><h2>Phòng nội dung</h2><small>Gemma</small><span class="room-state">Chờ giao việc</span></li>
+    <li id="room-reviewer"><h2>Phòng kiểm định</h2><small>GPT-OSS</small><span class="room-state">Chờ bản nháp</span></li>
+  </ul>
   <form id="run">
+    <h2>Giao việc</h2>
+    <label for="brief">Việc cần làm</label>
+    <textarea id="brief" rows="4" maxlength="6000" placeholder="Ví dụ: Viết kịch bản Mỡ kể chuyện, mở đầu 3 giây thu hút, kèm gợi ý âm thanh."></textarea>
     <label for="key">Khóa OpenRouter</label>
     <input id="key" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="key-help">
-    <p id="key-help">Khóa chỉ dùng trong lần mở trang này. Yêu cầu và bản nháp được gửi trực tiếp tới OpenRouter. <a href="https://openrouter.ai/settings/keys" target="_blank" rel="noopener noreferrer">Lấy khóa miễn phí ↗</a></p>
-    <label for="brief">Việc cần làm</label>
-    <textarea id="brief" rows="5" maxlength="6000" placeholder="Ví dụ: Viết kịch bản Mỡ kể chuyện, mở đầu 3 giây thu hút, kèm gợi ý âm thanh."></textarea>
+    <p id="key-help">Khóa chỉ dùng khi trang này đang mở. Yêu cầu và bản nháp được gửi đến OpenRouter. <a href="https://openrouter.ai/settings/keys" target="_blank" rel="noopener noreferrer">Lấy khóa miễn phí ↗</a></p>
     <div class="bar">
-      <button id="start" type="submit">Chạy hai AI</button>
-      <button id="retry" type="button" hidden>Chạy lại bước kiểm tra</button>
+      <button id="start" type="submit">Giao cho hai phòng</button>
+      <button id="retry" class="alt" type="button" hidden>Chạy lại bước kiểm tra</button>
     </div>
   </form>
   <p id="status" role="status" aria-live="polite"></p>
   <section id="results" hidden aria-labelledby="result-title">
-    <h3 id="result-title">Kết quả</h3>
+    <h3 id="result-title">Bàn giao kết quả</h3>
     <p id="saved-brief"></p>
     <pre id="final" class="result" hidden></pre>
     <details id="draft-panel">
-      <summary>Bản nháp của Gemma</summary>
+      <summary>Bản nháp của phòng nội dung</summary>
       <pre id="draft" class="result"></pre>
     </details>
   </section>
+</section>
+<section id="manual-rooms" class="hero">
+  <h2>Các phòng chuyển việc thủ công</h2>
+  <p>Mở từng công cụ AI và dán kết quả vào dự án để chuyển sang bước kế tiếp.</p>
+  <div class="grid" id="stats"></div>
 </section><section class="panel"><h2>🏢 Các phòng chuyên môn</h2><div class="agents" id="agents"></div></section><section class="panel"><h2>➕ Tạo dự án</h2><label for="name">Tên dự án</label><input id="name" maxlength="120" placeholder="Ví dụ: CloudWave Studio Pro"><label for="goal">Yêu cầu / kết quả cần đạt</label><textarea id="goal" maxlength="15000" placeholder="Mô tả đầy đủ sản phẩm, yêu cầu kỹ thuật, tiêu chí thành công..."></textarea><label for="criteria">Tiêu chí nghiệm thu</label><textarea id="criteria" maxlength="5000" placeholder="Ví dụ: hoạt động trên iPhone, không phát sinh phí, có thể kiểm thử..."></textarea><div class="bar"><button id="create">Tạo quy trình 5 giai đoạn</button></div></section><section id="work"><h2>📁 Dự án & phòng họp</h2><div id="projects"></div></section><section class="panel"><h2>💾 Dữ liệu & sao lưu</h2><p>Không có tài khoản hay máy chủ lưu trữ. Dự án chỉ lưu trên trình duyệt này. Hãy xuất JSON để tránh mất dữ liệu khi xóa Safari hoặc đổi điện thoại.</p><div class="bar"><button id="export" class="alt">Xuất sao lưu JSON</button><label class="linkbtn alt" for="import" style="margin:0">Nhập JSON</label><input type="file" id="import" accept=".json,application/json" hidden><button id="clear" class="warn">Xóa tất cả</button></div><p class="small">Không dán mật khẩu, API key hoặc dữ liệu bí mật vào các dịch vụ AI công khai.</p></section><div id="notice" class="notice" role="status"></div><footer>V2.2 • Quy trình kỹ thuật học từ ECC • Điều phối thủ công • Không giả lập kết quả AI</footer></main><script>
 "use strict";
 const AGENTS=[{name:"ChatGPT",role:"Giám đốc dự án",url:"https://chatgpt.com/",task:"Phân tích yêu cầu, lập kế hoạch, phân chia ưu tiên và đầu ra có thể kiểm chứng."},{name:"Gemini",role:"Nghiên cứu",url:"https://gemini.google.com/",task:"Phân tích các phương án, phát hiện yêu cầu thiếu và nêu rõ nguồn nào cần xác minh."},{name:"DeepSeek",role:"Kỹ thuật",url:"https://chat.deepseek.com/",task:"Đề xuất triển khai kỹ thuật, cấu trúc, kiểm thử và ràng buộc thực tế."},{name:"Claude",role:"Kiểm định",url:"https://claude.ai/",task:"Rà soát logic, chất lượng, lỗi tiềm ẩn và mức độ đáp ứng tiêu chí nghiệm thu."},{name:"Grok",role:"Phản biện",url:"https://grok.com/",task:"Đóng vai phản biện độc lập, tìm điểm yếu và đề xuất sửa chữa có ưu tiên."}];
