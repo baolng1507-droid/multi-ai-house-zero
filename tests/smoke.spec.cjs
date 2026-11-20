@@ -6,7 +6,7 @@ test('real browser: create, handoff, fail-closed gate, approval, reload and expo
  await page.locator('#goal').fill('Create a usable output and verify the handoffs.');
  await page.locator('#criteria').fill('Five responses and at least one passing test.');
  await page.locator('#create').click();
- await expect(page.locator('article.project h2')).toHaveText('Smoke project');
+ await expect(page.getByRole('heading',{name:'Smoke project',exact:true})).toHaveText('Smoke project');
  for(let i=0;i<5;i++){
   const step=page.locator('section.step').nth(i);
   await step.locator('textarea').last().fill('Verified output '+i);
@@ -29,7 +29,7 @@ test('real browser: create, handoff, fail-closed gate, approval, reload and expo
  await page.getByRole('button',{name:'Phê duyệt dự án'}).click();
  await expect(page.getByText('Đã phê duyệt',{exact:false}).first()).toBeVisible();
  await page.reload();
- await expect(page.locator('article.project h2')).toHaveText('Smoke project');
+ await expect(page.getByRole('heading',{name:'Smoke project',exact:true})).toHaveText('Smoke project');
  await expect(page.getByText('Đã phê duyệt',{exact:false}).first()).toBeVisible();
  await expect(page.locator('section.step.done')).toHaveCount(5);
  expect(errors).toEqual([]);
