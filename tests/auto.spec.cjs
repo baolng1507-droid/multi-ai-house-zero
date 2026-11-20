@@ -22,14 +22,16 @@ test("hands off the actual draft, retries only the review and restores the final
 
   await page.goto("/");
   await page.getByRole("link", { name: "Chạy tự động với hai AI" }).click();
+  await expect(page).toHaveURL(/\/#auto-hub$/);
+  const panel = page.getByRole("region", { name: "Chạy tự động với hai AI" });
   await page.getByLabel("Việc cần làm").fill(brief);
   await page.getByRole("button", { name: "Chạy hai AI" }).click();
-  await expect(page.getByRole("status")).toContainText("Nhập khóa");
+  await expect(panel.getByRole("status")).toContainText("Nhập khóa");
   expect(requests).toHaveLength(0);
 
   await page.getByLabel("Khóa OpenRouter").fill(key);
   await page.getByRole("button", { name: "Chạy hai AI" }).click();
-  await expect(page.getByRole("status")).toContainText("quá giới hạn");
+  await expect(panel.getByRole("status")).toContainText("quá giới hạn");
   await expect(page.locator("#draft")).toHaveText(draft);
   expect(requests).toHaveLength(2);
 
@@ -39,7 +41,7 @@ test("hands off the actual draft, retries only the review and restores the final
   await page.getByLabel("Khóa OpenRouter").fill(key);
   await page.getByRole("button", { name: "Chạy lại bước kiểm tra" }).click();
   await expect(page.locator("#final")).toHaveText(final);
-  await expect(page.getByRole("status")).toContainText("Đã lưu bản cuối");
+  await expect(panel.getByRole("status")).toContainText("Đã lưu bản cuối");
 
   expect(requests.map(({ body }) => body.model)).toEqual([
     "google/gemma-4-26b-a4b-it:free",
