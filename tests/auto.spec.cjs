@@ -46,8 +46,13 @@ test("hands off the actual draft, retries only the review and restores the final
 
   expect(requests.map(({ body }) => body.model)).toEqual([
     "google/gemma-4-26b-a4b-it:free",
-    "openai/gpt-oss-20b:free",
-    "openai/gpt-oss-20b:free",
+    "nvidia/nemotron-3.5-lightning:free",
+    "nvidia/nemotron-3.5-lightning:free",
+  ]);
+  expect(requests[0].body.models).toBeUndefined();
+  expect(requests[2].body.models).toEqual([
+    "nvidia/nemotron-3.5-lightning:free",
+    "nvidia/nemotron-3.5-super-vl:free",
   ]);
   for (const { body, authorization } of requests) {
     expect(authorization).toBe("Bearer " + key);
