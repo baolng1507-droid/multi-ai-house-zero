@@ -142,3 +142,10 @@
 @media (prefers-reduced-motion: reduce) {
   .campus-stop[data-state="working"] .campus-building { animation: none; }
 }
+
+#auto-hub form select { font-size: 16px; color: #182e35; background: #fffefa; border-color: #819c93; }
+#auto-hub .studio { margin-top: 14px; padding: 14px; border: 1px solid #b7ccb9; border-radius: 16px; background: #fffcf1; }
+#auto-hub .studio h2 { margin: 0 0 6px; }
+#auto-hub .studio p { color: #405a5c; margin: 6px 0; }
+#auto-hub .studio canvas, #auto-hub .studio video { width: min(100%, 290px); height: auto; border-radius: 12px; }
+#auto-hub .studio [hidden] { display: none; }

@@ -48,6 +48,8 @@
   </div>
   <form id="run">
     <h2>Giao việc</h2>
+    <label for="work-kind">Sản phẩm cần bàn giao</label>
+    <select id="work-kind"><option value="text">Nội dung văn bản</option><option value="video">Video minh họa dọc</option></select>
     <label for="brief">Việc cần làm</label>
     <textarea id="brief" rows="4" maxlength="6000" placeholder="Ví dụ: Viết kịch bản Mỡ kể chuyện, mở đầu 3 giây thu hút, kèm gợi ý âm thanh."></textarea>
     <label for="key">Khóa OpenRouter</label>
@@ -67,6 +69,18 @@
       <summary>Bản nháp của phòng nội dung</summary>
       <pre id="draft" class="result"></pre>
     </details>
+  </section>
+  <section id="studio" class="studio" aria-labelledby="studio-title">
+    <h2 id="studio-title">Xưởng video</h2>
+    <p>Chọn Video minh họa khi giao việc, hoặc thử dựng clip mẫu có sẵn. Phần xuất tạo chữ và đồ họa chuyển động.</p>
+    <div class="bar">
+      <button type="button" id="studio-sample" class="alt">Mở mẫu Mỡ kể chuyện</button>
+      <button type="button" id="studio-export" disabled>Xuất video</button>
+      <a id="studio-download" class="linkbtn" hidden>Tải video</a>
+    </div>
+    <p id="studio-status" aria-live="polite"></p>
+    <canvas width="720" height="1280" aria-label="Xem trước phân cảnh đầu" hidden></canvas>
+    <video controls playsinline preload="metadata" hidden></video>
   </section>
 </section>
 <section id="manual-rooms" class="hero">
