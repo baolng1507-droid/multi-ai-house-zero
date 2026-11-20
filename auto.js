@@ -170,6 +170,10 @@ async function run(resumeReview) {
   busy = true;
   setRoom(intakeRoom, "done", "Đã nhận việc");
   setRoom(deliveryRoom, "idle", "Chờ bản cuối");
+  if (!resumeReview) {
+    setRoom(writerRoom, "idle", "Chờ soạn");
+    setRoom(reviewerRoom, "idle", "Chờ bản nháp");
+  }
   let phase = "soạn";
   let current = resumeReview ? job : { brief, draft: "", final: "" };
   if (!resumeReview) {
@@ -247,9 +251,9 @@ if (job) {
   if (job.kind === "video" && job.final) {
     try { studio?.loadPlan(job.final); } catch { /* Keep older saved output available. */ }
   }
-  setRoom(writerRoom, "done", "Đã chuyển bản nháp");
+  setRoom(writerRoom, job.draft ? "done" : "idle", job.draft ? "Đã chuyển bản nháp" : "Chờ soạn");
   if (job.final) setRoom(reviewerRoom, "done", "Đã bàn giao");
-  else setRoom(reviewerRoom, "idle", "Chờ kiểm tra");
-  showStatus(job.final ? "Đã mở lại kết quả gần nhất." : "Đã mở lại bản nháp đang chờ kiểm tra.");
+  else setRoom(reviewerRoom, "idle", job.draft ? "Chờ kiểm tra" : "Chờ bản nháp");
+  showStatus(job.final ? "Đã mở lại kết quả gần nhất." : job.draft ? "Đã mở lại bản nháp đang chờ kiểm tra." : "Đã mở lại yêu cầu chưa có bản nháp.");
 }
 render();
