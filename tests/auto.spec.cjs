@@ -73,3 +73,33 @@ test("hands off the actual draft, retries only the review and restores the final
   await expect(page.getByLabel("Khóa OpenRouter")).toHaveValue("");
   expect(await page.evaluate(() => JSON.stringify(localStorage))).not.toContain(key);
 });
+
+test("failed new writer job never inherits previous completed room states, including after reload", async ({ page }) => {
+  let calls = 0;
+  await page.route("https://openrouter.ai/api/v1/chat/completions", async (route) => {
+    calls += 1;
+    if (calls === 3) {
+      await route.fulfill({ status: 429, json: { error: { code: 429 } } });
+      return;
+    }
+    await route.fulfill({ json: { choices: [{ message: { content: calls === 1 ? "Draft A" : "Final A" } }] } });
+  });
+  await page.goto("/");
+  await page.getByLabel("Khóa OpenRouter").fill("fixture-key");
+  await page.getByLabel("Việc cần làm").fill("First task");
+  await page.getByRole("button", { name: "Giao cho hai phòng" }).click();
+  await expect(page.locator("#final")).toHaveText("Final A");
+  await page.getByLabel("Việc cần làm").fill("Second task");
+  await page.getByRole("button", { name: "Giao cho hai phòng" }).click();
+  await expect(page.locator("#status")).toContainText("quá giới hạn");
+  await expect(page.locator("#room-writer .room-state")).toHaveText("Cần thử lại");
+  await expect(page.locator("#room-reviewer .room-state")).toHaveText("Chờ bản nháp");
+  await expect(page.locator("#room-delivery .room-state")).toHaveText("Chờ bản cuối");
+  await expect(page.locator("#results")).toBeHidden();
+  await page.reload();
+  await expect(page.locator("#room-writer .room-state")).toHaveText("Chờ soạn");
+  await expect(page.locator("#room-reviewer .room-state")).toHaveText("Chờ bản nháp");
+  await expect(page.locator("#status")).toContainText("chưa có bản nháp");
+  await expect(page.locator("#final")).toBeHidden();
+  expect(calls).toBe(3);
+});
