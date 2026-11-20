@@ -135,6 +135,9 @@ async function callModel(key, model, messages, fallback) {
     if (choice?.finish_reason === "length") {
       throw new Error("Kết quả vượt giới hạn độ dài. Hãy yêu cầu bản ngắn hơn.");
     }
+    if (choice?.finish_reason === "content_filter" || choice?.message?.refusal) {
+      throw new Error("Mô hình từ chối hoặc đã lọc nội dung. Không thể bàn giao kết quả này.");
+    }
     const content = choice?.message?.content;
     if (typeof content !== "string" || !content.trim()) {
       throw new Error("Mô hình không trả về nội dung.");
