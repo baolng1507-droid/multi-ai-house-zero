@@ -22,6 +22,10 @@ test("hands off the actual draft, retries only the review and restores the final
 
   await page.goto("/");
   const panel = page.getByRole("region", { name: "Điều hành công ty AI" });
+  const map = panel.getByRole("group", { name: "Bản đồ công ty AI" });
+  await expect(map.getByRole("button")).toHaveCount(4);
+  await map.getByRole("button", { name: /Phòng kiểm định/ }).click();
+  await expect(panel.locator("#room-detail-title")).toHaveText("Phòng kiểm định");
   await page.getByLabel("Việc cần làm").fill(brief);
   await page.getByRole("button", { name: "Giao cho hai phòng" }).click();
   await expect(panel.getByRole("status")).toContainText("Nhập khóa");
@@ -33,6 +37,7 @@ test("hands off the actual draft, retries only the review and restores the final
   await expect(page.locator("#draft")).toHaveText(draft);
   await expect(panel.locator("#room-writer .room-state")).toHaveText("Đã chuyển bản nháp");
   await expect(panel.locator("#room-reviewer .room-state")).toHaveText("Cần thử lại");
+  await expect(panel.locator("#room-detail-state")).toHaveText("Cần thử lại");
   expect(requests).toHaveLength(2);
 
   await page.reload();
@@ -43,6 +48,10 @@ test("hands off the actual draft, retries only the review and restores the final
   await expect(page.locator("#final")).toHaveText(final);
   await expect(panel.getByRole("status")).toContainText("Đã lưu bản cuối");
   await expect(panel.locator("#room-reviewer .room-state")).toHaveText("Đã bàn giao");
+  await map.getByRole("button", { name: /Kho bàn giao/ }).click();
+  await expect(panel.locator("#room-detail-state")).toHaveText("Có bản cuối");
+  await panel.getByRole("link", { name: "Mở kết quả đã lưu" }).click();
+  await expect(page).toHaveURL(/#results$/);
 
   expect(requests.map(({ body }) => body.model)).toEqual([
     "google/gemma-4-26b-a4b-it:free",

@@ -4,15 +4,6 @@
 #auto-hub h1 { margin: 0 0 8px; font-size: clamp(28px, 6vw, 44px); line-height: 1.14; letter-spacing: -.045em; }
 #auto-hub .hub-intro { margin: 0 0 20px; }
 .hub-nav { font-size: 13px; color: #a6f1d1; }
-.hub-rooms { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); list-style: none; padding: 0; margin: 0 0 18px; gap: 10px; }
-.hub-rooms li { border: 1px solid #355361; border-radius: 14px; padding: 12px; background: #132638; }
-.hub-rooms h2 { margin: 0 0 2px; font-size: 15px; }
-.hub-rooms small { color: #b4c3d7; }
-.hub-rooms .room-state { display: block; margin-top: 8px; font-size: 13px; color: #b4c3d7; }
-.hub-rooms li[data-state="working"], .hub-rooms li[data-state="done"] { border-color: #77c5a8; }
-.hub-rooms li[data-state="working"] .room-state, .hub-rooms li[data-state="done"] .room-state { color: #a6f1d1; }
-.hub-rooms li[data-state="error"] { border-color: #ef9c95; }
-.hub-rooms li[data-state="error"] .room-state { color: #ffc2bc; }
 #auto-hub form, #auto-hub #results { border: 1px solid #355361; border-radius: 16px; background: #0e192b; padding: 14px; }
 #auto-hub form h2 { margin: 0 0 8px; }
 #auto-hub input, #auto-hub textarea { font-size: 16px; }
@@ -26,17 +17,35 @@
 #auto-hub #results { margin-top: 12px; }
 #auto-hub #saved-brief { overflow-wrap: anywhere; white-space: pre-wrap; }
 #auto-hub .result { font: inherit; max-height: none; }
-</style><script type="module" src="./auto.js"></script></head><body><main><header>
+</style><link rel="stylesheet" href="./campus.css"><script type="module" src="./auto.js"></script></head><body><main><header>
   <div class="brand">Multi-AI House V2</div>
   <a class="hub-nav" href="#manual-rooms">Phòng thủ công ↓</a>
 </header>
 <section id="auto-hub" class="panel" aria-labelledby="auto-title">
   <h1 id="auto-title">Điều hành công ty AI</h1>
   <p class="hub-intro">Giao một việc. Phòng nội dung soạn bản nháp, phòng kiểm định sửa và bàn giao bản cuối.</p>
-  <ul class="hub-rooms" aria-label="Tiến độ phòng tự động">
-    <li id="room-writer"><h2>Phòng nội dung</h2><small>Gemma</small><span class="room-state">Chờ giao việc</span></li>
-    <li id="room-reviewer"><h2>Phòng kiểm định</h2><small>Nemotron</small><span class="room-state">Chờ bản nháp</span></li>
-  </ul>
+  <div class="campus">
+    <div class="campus-map" role="group" aria-label="Bản đồ công ty AI">
+      <button id="room-intake" class="campus-stop" type="button" aria-pressed="true" aria-controls="room-detail">
+        <span class="campus-building" aria-hidden="true"></span><strong>Bàn điều hành</strong><span class="room-state">Nhận yêu cầu</span>
+      </button>
+      <button id="room-writer" class="campus-stop" type="button" aria-pressed="false" aria-controls="room-detail">
+        <span class="campus-building" aria-hidden="true"></span><strong>Phòng nội dung</strong><span class="room-state">Chờ giao việc</span>
+      </button>
+      <button id="room-reviewer" class="campus-stop" type="button" aria-pressed="false" aria-controls="room-detail">
+        <span class="campus-building" aria-hidden="true"></span><strong>Phòng kiểm định</strong><span class="room-state">Chờ bản nháp</span>
+      </button>
+      <button id="room-delivery" class="campus-stop" type="button" aria-pressed="false" aria-controls="room-detail">
+        <span class="campus-building" aria-hidden="true"></span><strong>Kho bàn giao</strong><span class="room-state">Chờ bản cuối</span>
+      </button>
+    </div>
+    <section id="room-detail" class="campus-detail" aria-labelledby="room-detail-title">
+      <h2 id="room-detail-title">Bàn điều hành</h2>
+      <p id="room-detail-description">Nhận yêu cầu và chuyển cho phòng nội dung.</p>
+      <p id="room-detail-state">Nhận yêu cầu</p>
+      <a id="room-detail-link" class="linkbtn" href="#run">Giao việc</a>
+    </section>
+  </div>
   <form id="run">
     <h2>Giao việc</h2>
     <label for="brief">Việc cần làm</label>

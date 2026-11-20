@@ -16,11 +16,24 @@ const draftPanel = document.querySelector("#draft-panel");
 const draftOutput = document.querySelector("#draft");
 const writerRoom = document.querySelector("#room-writer");
 const reviewerRoom = document.querySelector("#room-reviewer");
+const intakeRoom = document.querySelector("#room-intake");
+const deliveryRoom = document.querySelector("#room-delivery");
+const detailTitle = document.querySelector("#room-detail-title");
+const detailDescription = document.querySelector("#room-detail-description");
+const detailState = document.querySelector("#room-detail-state");
+const detailLink = document.querySelector("#room-detail-link");
+const rooms = new Map([
+  [intakeRoom, ["Bàn điều hành", "Nhận yêu cầu và chuyển cho phòng nội dung."]],
+  [writerRoom, ["Phòng nội dung", "Gemma viết bản nháp từ yêu cầu của mày."]],
+  [reviewerRoom, ["Phòng kiểm định", "Nemotron nhận yêu cầu và bản nháp, sửa lỗi rồi trả bản hoàn chỉnh."]],
+  [deliveryRoom, ["Kho bàn giao", "Mở lại bản nháp và bản cuối được lưu trên trình duyệt."]],
+]);
 const savedBrief = document.querySelector("#saved-brief");
 
 let job = readJob();
 let busy = false;
 let saved = true;
+let selectedRoom = intakeRoom;
 
 function readJob() {
   try {
@@ -60,12 +73,25 @@ function render() {
   startButton.disabled = busy;
   briefInput.readOnly = busy;
   keyInput.readOnly = busy;
+  renderRoomDetail();
+}
+
+function renderRoomDetail() {
+  if (!detailTitle || !selectedRoom) return;
+  const [title, description] = rooms.get(selectedRoom);
+  detailTitle.textContent = title;
+  detailDescription.textContent = description;
+  detailState.textContent = selectedRoom.querySelector(".room-state").textContent;
+  const hasOutput = Boolean(job?.draft) && selectedRoom !== intakeRoom;
+  detailLink.href = hasOutput ? "#results" : "#run";
+  detailLink.textContent = hasOutput ? "Mở kết quả đã lưu" : "Giao việc";
 }
 
 function setRoom(room, state, message) {
   if (!room) return;
   room.dataset.state = state;
   room.querySelector(".room-state").textContent = message;
+  renderRoomDetail();
 }
 
 function showStatus(message) {
@@ -134,6 +160,8 @@ async function run(resumeReview) {
   if (resumeReview && !job?.draft) return;
 
   busy = true;
+  setRoom(intakeRoom, "done", "Đã nhận việc");
+  setRoom(deliveryRoom, "idle", "Chờ bản cuối");
   let phase = "soạn";
   let current = resumeReview ? job : { brief, draft: "", final: "" };
   render();
@@ -161,6 +189,7 @@ async function run(resumeReview) {
     ], reviewerFallback);
     updateJob({ ...current, final });
     setRoom(reviewerRoom, "done", "Đã bàn giao");
+    setRoom(deliveryRoom, "done", "Có bản cuối");
     showStatus(saved ? "Hoàn tất. Đã lưu bản cuối trên trình duyệt này." : "Đã có bản cuối.");
   } catch (error) {
     setRoom(phase === "soạn" ? writerRoom : reviewerRoom, "error", "Cần thử lại");
@@ -178,7 +207,19 @@ form.addEventListener("submit", (event) => {
   void run(false);
 });
 retryButton.addEventListener("click", () => void run(true));
+if (detailTitle) {
+  for (const room of rooms.keys()) {
+    room.addEventListener("click", () => {
+      selectedRoom.setAttribute("aria-pressed", "false");
+      selectedRoom = room;
+      room.setAttribute("aria-pressed", "true");
+      renderRoomDetail();
+    });
+  }
+}
 if (job) {
+  setRoom(intakeRoom, "done", "Đã nhận việc");
+  if (job.final) setRoom(deliveryRoom, "done", "Có bản cuối");
   briefInput.value = job.brief;
   setRoom(writerRoom, "done", "Đã chuyển bản nháp");
   if (job.final) setRoom(reviewerRoom, "done", "Đã bàn giao");
