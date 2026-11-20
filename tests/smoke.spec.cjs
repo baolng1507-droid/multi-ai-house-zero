@@ -60,3 +60,37 @@ test('new request clears stale delivery even when provider rejects it',async({pa
  const stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('multi-ai-house-auto-v1')));
  expect(stored).toEqual({brief:'New brief',draft:'',final:''});
 });
+
+
+test('two real browser handoffs with mocked provider and retry after reviewer rate limit',async({page})=>{
+ await page.goto('/');
+ const requests=[];
+ let reviewAttempts=0;
+ await page.route('https://openrouter.ai/api/v1/chat/completions',async route=>{
+  const payload=route.request().postDataJSON();
+  requests.push(payload);
+  if(requests.length===1){
+   await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({choices:[{finish_reason:'stop',message:{content:'Draft from writer'}}]})});
+  }else if(++reviewAttempts===1){
+   await route.fulfill({status:429,contentType:'application/json',body:JSON.stringify({error:{message:'rate limited'}})});
+  }else{
+   await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({choices:[{finish_reason:'stop',message:{content:'Reviewed final answer'}}]})});
+  }
+ });
+ await page.locator('#brief').fill('Write a short, useful answer');
+ await page.locator('#key').fill('test-key');
+ await page.locator('#start').click();
+ await expect(page.locator('#status')).toContainText('giới hạn lượt gọi');
+ await expect(page.locator('#draft')).toContainText('Draft from writer');
+ await expect(page.locator('#final')).toBeHidden();
+ await page.reload();
+ await expect(page.locator('#retry')).toBeVisible();
+ await page.locator('#key').fill('test-key');
+ await page.locator('#retry').click();
+ await expect(page.locator('#final')).toContainText('Reviewed final answer');
+ expect(requests).toHaveLength(3);
+ expect(requests[0].model).toContain('gemma');
+ expect(requests[1].model).toContain('nemotron');
+ expect(requests[2].messages[1].content).toContain('Draft from writer');
+ expect(requests.every(r=>r.provider?.max_price?.prompt===0&&r.provider?.max_price?.completion===0)).toBe(true);
+});
