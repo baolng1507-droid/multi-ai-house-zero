@@ -1,0 +1,11 @@
+{
+  "name": "Multi-AI House Zero",
+  "short_name": "AI House Zero",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "lang": "vi",
+  "description": "Trung tâm điều phối thủ công 5 AI không dùng API trả phí"
+}
