@@ -126,3 +126,24 @@ test("invalid video review cannot be delivered and can be retried from saved dra
   await expect(page.locator("#final")).toHaveText(valid);
   expect(calls).toBe(3);
 });
+
+
+test("filtered reviewer output is not delivered even when the provider returns text", async ({ page }) => {
+  let calls = 0;
+  await page.route("https://openrouter.ai/api/v1/chat/completions", async route => {
+    calls++;
+    await route.fulfill({ json: { choices: [{
+      finish_reason: calls === 2 ? "content_filter" : "stop",
+      message: { content: calls === 1 ? "Safe draft" : "Filtered partial output" }
+    }] } });
+  });
+  await page.goto("/");
+  await page.getByLabel("Khóa OpenRouter").fill("fixture-key");
+  await page.getByLabel("Việc cần làm").fill("Write a short script");
+  await page.getByRole("button", { name: "Giao cho hai phòng" }).click();
+  await expect(page.locator("#status")).toContainText("đã lọc nội dung");
+  await expect(page.locator("#draft")).toHaveText("Safe draft");
+  await expect(page.locator("#final")).toBeHidden();
+  await expect(page.getByRole("button", { name: "Chạy lại bước kiểm tra" })).toBeVisible();
+  expect(calls).toBe(2);
+});
