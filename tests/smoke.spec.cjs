@@ -11,5 +11,13 @@ test('project creation, handoff, test gate, report and persistence',async({page}
  await expect(page.locator('#notice')).toContainText('bằng chứng');
  await page.getByLabel('Bằng chứng kiểm thử / xác minh (lệnh, kết quả, ngày, người kiểm tra)').fill('Manual test evidence recorded.');
  await page.getByRole('button',{name:'Lưu bằng chứng & bài học'}).click();
- await page.getByRole('button',{name:'Thêm ca kiểm thử'}).click({timeout:5000}).catch(()=>{});
+ page.on('dialog',async dialog=>{await dialog.accept(dialog.message().includes('Tên ca')?'Open homepage': 'Page loads');});
+ await page.getByRole('button',{name:'Thêm ca kiểm thử'}).click();
+ await expect(page.getByText('Ca 1: Open homepage')).toBeVisible();
+ await page.getByRole('button',{name:'Phê duyệt dự án'}).click();
+ await expect(page.locator('#notice')).toContainText('PASS');
+ await page.getByRole('button',{name:'Sửa',exact:true}).click();
+ await expect(page.getByText('Ca 1: Open homepage')).toBeVisible();
+ await page.reload();
+ await expect(page.getByText('Smoke project').last()).toBeVisible();
 });
