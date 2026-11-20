@@ -103,3 +103,26 @@ test("failed new writer job never inherits previous completed room states, inclu
   await expect(page.locator("#final")).toBeHidden();
   expect(calls).toBe(3);
 });
+
+
+test("invalid video review cannot be delivered and can be retried from saved draft", async ({ page }) => {
+  let calls = 0;
+  const valid = JSON.stringify({title:"Mỡ kể chuyện",scenes:[{headline:"Mỡ chờ sen",caption:"Sen về rồi!",seconds:3,color:"mint"},{headline:"Mỡ vui",caption:"Một ngày bình yên",seconds:3,color:"rose"}]});
+  await page.route("https://openrouter.ai/api/v1/chat/completions", async route => {
+    calls++;
+    await route.fulfill({json:{choices:[{message:{content:calls===1?valid:calls===2?"Not valid JSON":valid}}]}});
+  });
+  await page.goto("/");
+  await page.getByLabel("Khóa OpenRouter").fill("fixture-key");
+  await page.locator("#work-kind").selectOption("video");
+  await page.getByLabel("Việc cần làm").fill("Làm video dọc về Mỡ");
+  await page.getByRole("button",{name:"Giao cho hai phòng"}).click();
+  await expect(page.locator("#status")).toContainText("sai định dạng video");
+  await expect(page.locator("#final")).toBeHidden();
+  await expect(page.locator("#draft")).toHaveText(valid);
+  await page.reload();
+  await page.getByLabel("Khóa OpenRouter").fill("fixture-key");
+  await page.getByRole("button",{name:"Chạy lại bước kiểm tra"}).click();
+  await expect(page.locator("#final")).toHaveText(valid);
+  expect(calls).toBe(3);
+});
