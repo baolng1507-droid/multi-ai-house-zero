@@ -14,7 +14,7 @@ test('real browser: create, handoff, fail-closed gate, approval, reload and expo
  }
  await page.getByRole('button',{name:'Phê duyệt dự án'}).click();
  await expect(page.locator('#notice')).toContainText('bằng chứng');
- const section=page.locator('div.panel').filter({hasText:'ECC-inspired'}).last();
+ const section=page.locator('section.panel').filter({hasText:'ECC-inspired'}).last();
  await section.locator('textarea').first().fill('Test performed on Chromium, observed successful result.');
  await section.getByRole('button',{name:'Lưu bằng chứng & bài học'}).click();
  let replies=['Open homepage','Page loads'];
