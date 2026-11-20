@@ -164,6 +164,9 @@ async function run(resumeReview) {
   setRoom(deliveryRoom, "idle", "Chờ bản cuối");
   let phase = "soạn";
   let current = resumeReview ? job : { brief, draft: "", final: "" };
+  // Clear the previous delivery before starting a new request. A failed call must
+  // never leave an unrelated old answer looking like the new job's result.
+  if (!resumeReview) updateJob(current);
   render();
 
   try {
